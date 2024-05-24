@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask 
 from flask_redis import FlaskRedis
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -29,9 +29,10 @@ def create_app() -> Flask:
         db.create_all()
     
     # register blueprint
-    from .views import login , register
-    app.register_blueprint(register.bp)
-    app.register_blueprint(login.bp)
+    from .views import cart , steamApi , game
+    app.register_blueprint(cart.bp)
+    app.register_blueprint(steamApi.bp)
+    app.register_blueprint(game.bp)
     
     for route in app.url_map.iter_rules():
         print(f"{route.methods} {route}")
