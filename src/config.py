@@ -18,4 +18,7 @@ class Config(object):
     MAIL_USE_TLS = True
     
     # Flask SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = "sqlite:///laro.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///laro2.db"
+    
+    # Flask APScheduler
+    SCHEDULER_API_ENABLED = True

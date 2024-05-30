@@ -2,3 +2,5 @@ chatvenv
 __pycache__
 instance
 ntl
+game.csv
+*.csv
