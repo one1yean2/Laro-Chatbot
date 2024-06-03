@@ -1,7 +1,11 @@
+from redis import Redis
+
+
 class Config(object):
 
     # Flask
     SECRET_KEY = "84b9ebfa0b5bab16df6601da5c35b0f8ebb5d062ebdddd14bff178960dfeea30"
+    FERNET_KEY = "3VyT9gEaLC9Ax2ihYa4_mlvW3MORPrBtVyyqMpUk4T8="
     # SERVER_NAME = "127.0.0.1:5000"
     # SERVER_NAME = "938e-125-27-102-233.ngrok-free.app"
     APPLICATION_ROOT = "/"
@@ -22,3 +26,4 @@ class Config(object):
     
     # Flask APScheduler
     SCHEDULER_API_ENABLED = True
+    

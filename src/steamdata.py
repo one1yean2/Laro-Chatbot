@@ -4,37 +4,18 @@ import threading
 import time
 import requests
 
-from .models import Game, GameList, db  # Adjust the import based on your app structure
+from .models import Game, GameList, db 
 from . import scheduler
 
 
 
 
-
-# @bp.route('/cronjob',methods=["GET"])
-# def get_games_cronjob(): 
-
-        
-#         sched = BackgroundScheduler(daemon=True)
-#         # cron every midnight
-#         cron_expression = '0 1 * * *'
-#         sched.add_job(get_games_steamweb,CronTrigger.from_crontab(cron_expression))
-#         sched.start()
-#         return {"message": "Schedule set to run at " + cron_expression} , 200
-
-
-# TODO : ADD CRONJOB TO RUN EVERY DAY
 def get_games_steamweb():
     with scheduler.app.app_context():
-        # TODO : MOVE WEBAPIKEY TO ENVIRONMENT VARIABLE
         # WEBAPIKEY = 'ECF5EA6F18F37B8600102FE342FA06AD'
-        # url = 'https://api.steampowered.com/IStoreService/GetAppList/v1/?key=' + WEBAPIKEY + '&max_results=50000'
         url='https://api.steampowered.com/ISteamApps/GetAppList/v2/'
         threading.Thread(target=insert_gameId_data,args=(url,)).start()
         threading.Thread(target=update_game_details,args=()).start()
-    
-    
-    # return {"message": "Data insertion is complete"} , 200
 
 def insert_gameId_data(url):
 
@@ -46,26 +27,16 @@ def insert_gameId_data(url):
         data = get_request(url)
         apps = data['applist']['apps']
         
-        # existing_game_ids = {game.game_id for game in GameList.query.all()}
-        # existing_game =[]
         for appSteam in apps:
             if appSteam['name'] == '': continue
-            # if appSteam['appid'] in existing_game: continue
-            # existing_game.append(appSteam['appid'])
-            # if int(appSteam['appid']) not in existing_game_ids:
-                # print(int(appSteam['appid']))
-                # print(appSteam['name'])
             game = GameList(
                 game_id = appSteam['appid'],
                 game_name = appSteam['name']
-                    # last_modified = app['last_modified']
-                    # price_change_number = app['price_change_number']
             )
             db.session.add(game)
-        # db.session.commit()
         db.session.commit()
         
-        # update_game_details(app)
+
 def get_request(url, parameters=None):
     """Return json-formatted response of a get request using optional parameters.
     
@@ -119,24 +90,22 @@ def parse_steam_request(appid):
     return data
 def update_game_details():
     with scheduler.app.app_context():
-        # TODO : change query.all to data fetch from 3rd party API
-        # steamSpyData = get_request('https://steamspy.com/api.php?request=top100in2weeks')
-        
-        
+
         db.session.query(Game).delete()
         db.session.commit()
         for i in range(7):
             steamSpyDataAll = get_request('https://steamspy.com/api.php?request=all&page='+str(i))
 
-            # for appid , game_info in steamSpyData.items():
+
             for appid , game_info in steamSpyDataAll.items():
             
                 game_genre = ''
                 data = parse_steam_request(appid)
+                
                 genres_data = data.get('genres', [])
                 for genre in genres_data:
                     game_genre += genre['description']+','
-                print(game_genre)
+                # print(game_genre)
                 game = Game(
                     game_id = appid,
                     game_name = data.get('name', 'N/A'),
@@ -152,6 +121,5 @@ def update_game_details():
                     review_negative = game_info.get('negative', -1),
                 )
                 db.session.add(game)
-                # TODO : MAY CHANGE IN THE FUTURE
                 db.session.commit()
                 

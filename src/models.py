@@ -19,7 +19,7 @@ class Order(db.Model):
     order_date = Column(DateTime(timezone=True),nullable=False)
     total_cost = Column(Integer)
     promotion_id = Column(String, ForeignKey('promotion.promotion_id'))
-    
+    qrcode_data = Column(String)
     
     user = relationship("User", back_populates="orders")
     items = relationship("OrderItem", back_populates="order")
@@ -96,7 +96,8 @@ class Game(db.Model):
 class Promotion(db.Model):
     __tablename__ = 'promotion'
     
-    promotion_id = Column(String, index=True, primary_key=True)
+    promotion_id = Column(Integer, index=True, primary_key=True)
+    promotion_name  = Column(String)
     discount_type = Column(db.String(20),nullable=False)
     discount_value = Column(db.Float,nullable=True)
     min_purchase = Column(db.Float,nullable=True)
