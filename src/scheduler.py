@@ -5,9 +5,9 @@ from flask_apscheduler import APScheduler
 scheduler = APScheduler()
 
 def create_jobs(app):
-    game_data_job = scheduler.add_job(id='Game Data Task', func=game_data_task, trigger='cron', hour=0, minute=1, second=0)
-    promotion_job = scheduler.add_job(id='Scheduled Promotion', func=scheduled_promotion, trigger='cron', hour=11, minute=59, second=50)
-    expired_job = scheduler.add_job(id='Expired Promotion', func=expired_promotion, trigger='cron', hour=12, minute=2, second=50)
+    game_data_job = scheduler.add_job(id='Game Data Task', func=game_data_task, trigger='cron', hour=1, minute=0, second=0)
+    promotion_job = scheduler.add_job(id='Scheduled Promotion', func=scheduled_promotion, trigger='cron', hour=0, minute=0, second=0)
+    expired_job = scheduler.add_job(id='Expired Promotion', func=expired_promotion, trigger='cron', hour=0, minute=0, second=0)
 def scheduled_promotion():
     with scheduler.app.app_context():
         from src.models import Promotion , db

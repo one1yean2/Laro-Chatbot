@@ -527,21 +527,7 @@ def promotion_payload_format(promotion):
             ]
           },
           
-          {
-            "type": "box",
-            "layout": "baseline",
-            "contents": [
 
-              {
-                "type": "text",
-                "text": "ลด "+str(promotion['discount_value'])+" บาท",
-                "weight": "bold",
-                "margin": "sm",
-                "flex": 0
-              },
-
-            ]
-          }
         ]
       },
       {
@@ -710,7 +696,7 @@ def success_payload_format(topic,message):
   
   
   
-def order_payload_format(data,promotion):
+def order_payload_format(data):
     mylist = []
     def clean_price(price):
       # print(price)
@@ -842,7 +828,7 @@ def order_payload_format(data,promotion):
               },
               {
                 "type": "text",
-                "text": "-"+str(promotion),
+                "text": "-"+str(item['discount']),
                 "size": "sm",
                 "align": "end",
               }
@@ -862,7 +848,7 @@ def order_payload_format(data,promotion):
               },
               {
                 "type": "text",
-                "text": "฿"+str(total_price-promotion),
+                "text": "฿"+str(item['total_cost']-item['discount']),
                 "size": "sm",
                 "align": "end",
               }
@@ -929,7 +915,7 @@ def order_payload_format(data,promotion):
     return bubble
   
   
-def his_order_payload_format(data,promotion):
+def his_order_payload_format(data):
     mylist = []
     def clean_price(price):
       # print(price)
@@ -1061,7 +1047,7 @@ def his_order_payload_format(data,promotion):
               },
               {
                 "type": "text",
-                "text": "-"+str(promotion),
+                "text": "-"+str(item['discount']),
                 "size": "sm",
                 "align": "end",
               }
@@ -1081,7 +1067,7 @@ def his_order_payload_format(data,promotion):
               },
               {
                 "type": "text",
-                "text": "฿"+str(total_price-promotion),
+                "text": "฿"+str(item['total_cost']-item['discount']),
                 "size": "sm",
                 "align": "end",
               }

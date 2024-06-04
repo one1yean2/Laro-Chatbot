@@ -45,6 +45,7 @@ def process_message(message):
         print("User ID:", user_id)
         schedule.clear(user_id)
         # Schedule message sending function to run every 15 seconds
+        
         schedule.every(15).minutes.do(send_message, user_id).tag(user_id)
 
     except Exception as e:

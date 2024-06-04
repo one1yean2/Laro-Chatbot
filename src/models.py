@@ -17,7 +17,8 @@ class Order(db.Model):
     user_id = Column(String, ForeignKey('user.customer_id'))
     order_status = Column(String)
     order_date = Column(DateTime(timezone=True),nullable=False)
-    total_cost = Column(Integer)
+    total_cost = Column(db.Float)
+    discount = Column(db.Float)
     promotion_id = Column(String, ForeignKey('promotion.promotion_id'))
     qrcode_data = Column(String)
     

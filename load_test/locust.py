@@ -33,20 +33,10 @@ class GameBehavior(HttpUser):
         })
         self.client.get("/cart/view_cart", params={"customer_id": customer_id})
         self.client.post("/cart/clear_cart", json={"customer_id": customer_id})
-    # @task
-    # def view_cart(self):
-    #     customer_id = random.randint(1, 1000)
-    #     self.client.get("/cart/view_cart", params={"customer_id": customer_id})
-        
-    # @task
-    # def clear_cart(self):
-    #     customer_id = random.randint(1, 1000)
-    #     self.client.post("/cart/clear_cart", json={"customer_id": customer_id})
-        
         
     @task
     def get_promotion(self):
-        customer_id = random.randint(1, 1000) # Replace with your customer ID or use a random generator
+        customer_id = random.randint(1, 1000) 
         response = self.client.get(f"/promotion/get_promotion?customer_id={customer_id}")
         if response.status_code == 200:
             print("Promotions retrieved successfully")
@@ -55,8 +45,8 @@ class GameBehavior(HttpUser):
 
     @task
     def use_promotion(self):
-        customer_id = random.randint(1, 1000)  # Replace with your customer ID or use a random generator
-        data = {"customer_id": customer_id, "promotion_id": "promo 1"}  # Replace promotion_id with an actual promotion ID
+        customer_id = random.randint(1, 1000) 
+        data = {"customer_id": customer_id, "promotion_id": "promo 1"}  
         headers = {"Content-Type": "application/json"}
         response = self.client.post("/promotion/use_promotion", data=json.dumps(data), headers=headers)
         if response.status_code == 200:
@@ -66,7 +56,7 @@ class GameBehavior(HttpUser):
 
     @task
     def discard_promotion(self):
-        customer_id = random.randint(1, 1000)  # Replace with your customer ID or use a random generator
+        customer_id = random.randint(1, 1000) 
         response = self.client.get(f"/promotion/discard_promotion?customer_id={customer_id}")
         if response.status_code == 200:
             print("Promotion discarded successfully")
@@ -75,8 +65,8 @@ class GameBehavior(HttpUser):
             
     @task
     def edit_profile(self):
-        customer_id = random.randint(1, 1000)   # Replace with your customer ID or use a random generator
-        email = "test@example.com"  # Replace with the email you want to set
+        customer_id = random.randint(1, 1000)   
+        email = "test@example.com"  
         data = {"customer_id": customer_id, "email": email}
         headers = {"Content-Type": "application/json"}
         response = self.client.post("/user/edit_profile", data=json.dumps(data), headers=headers)

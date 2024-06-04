@@ -14,7 +14,9 @@ def get_games_steamweb():
     with scheduler.app.app_context():
         # WEBAPIKEY = 'ECF5EA6F18F37B8600102FE342FA06AD'
         url='https://api.steampowered.com/ISteamApps/GetAppList/v2/'
-        threading.Thread(target=insert_gameId_data,args=(url,)).start()
+        t1 = threading.Thread(target=insert_gameId_data,args=(url,))
+        t1.start()
+        t1.join()
         threading.Thread(target=update_game_details,args=()).start()
 
 def insert_gameId_data(url):

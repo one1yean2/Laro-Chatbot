@@ -29,7 +29,6 @@ def login():
 @oid.after_login
 def create_or_login(resp):
     steam_id = resp.identity_url.split('/')[-1]
-    session['steam_id'] = steam_id
     redis_cache.set("steam_id"+str(session['customer_id']), steam_id)
     customer_id = session.pop('customer_id', None) 
     encrypted_steam_id = encrypt_data(steam_id)

@@ -49,21 +49,25 @@ def create_order():
 
     # Calculate total cost
 
+    overall_total_cost = sum(clean_price(item.game.price) * item.game_quantity for item in cart.items)
     total_cost = sum(clean_price(item.game.price) * item.game_quantity for item in cart.items)
     if promotion_id is not None:
         if promotion.min_purchase <= total_cost:
             if promotion.discount_type == 'literal':
-                total_cost = total_cost - promotion.discount_value
+                total_cost = promotion.discount_value
             else :
-                total_cost = total_cost - (total_cost * (promotion.discount_value/100))
+                total_cost =  (total_cost * (promotion.discount_value/100))
         else:
             return error_payload_format("ยอดรวมไม่ถึงราคาขั้นต่ำ"), 200
+    else:
+        total_cost = 0
     # Create a new order
     new_order = Order(
         user_id=customer_id,
         order_status='Pending',
         order_date=datetime.now(),
-        total_cost=total_cost,
+        total_cost=overall_total_cost,
+        discount = total_cost,
         promotion_id=promotion_id
     )
     db.session.add(new_order)
@@ -103,16 +107,16 @@ def view_order(customer_id,promotion_id):
     detail = order.to_dict(orient='records')
     total_cost = Order.query.filter_by(user_id=customer_id, order_status='Pending').first().total_cost
     pro = Promotion.query.get(promotion_id)
-    if pro is not None:
-        if pro.discount_type == "literal":
-            discount_value = pro.discount_value
-        else:
-            discount_value = (total_cost*pro.discount_value)/100
-        if total_cost < pro.min_purchase:
-            discount_value = 0
-    else:
-        discount_value = 0
-    cp = order_payload_format(detail,discount_value)
+    # if pro is not None:
+    #     if pro.discount_type == "literal":
+    #         discount_value = pro.discount_value
+    #     else:
+    #         discount_value = (total_cost*pro.discount_value)/100
+    #     if total_cost < pro.min_purchase:
+    #         discount_value = 0
+    # else:
+    #     discount_value = 0
+    cp = order_payload_format(detail)
     out = custompayload(cp)
     return jsonify(out)
 
@@ -150,20 +154,20 @@ def order_history():
         # print(item['order_id'])
         total_cost = Order.query.filter_by(order_id=item['order_id']).first().total_cost
         promotion_id = Order.query.filter_by(order_id=item['order_id']).first().promotion_id
-        pro = Promotion.query.get(promotion_id)
-        if pro is not None:
-            if pro.discount_type == "literal":
-                discount_value = pro.discount_value
-            else:
-                discount_value = (total_cost*pro.discount_value)/100
-            if total_cost < pro.min_purchase:
-                discount_value = 0
-        else:
-            discount_value = 0
+        # pro = Promotion.query.get(promotion_id)
+        # if pro is not None:
+        #     if pro.discount_type == "literal":
+        #         discount_value = pro.discount_value
+        #     else:
+        #         discount_value = (total_cost*pro.discount_value)/100
+        #     if total_cost < pro.min_purchase:
+        #         discount_value = 0
+        # else:
+        #     discount_value = 0
         if item['order_status'] == "Pending":
-            mylist.append(order_payload_format([item],discount_value))
+            mylist.append(order_payload_format([item]))
         else:
-            mylist.append(his_order_payload_format([item],discount_value))
+            mylist.append(his_order_payload_format([item]))
     # cp = 
     # customer_id = request.args.get('customer_id')
     # order = pd.read_sql_query('SELECT * FROM "order" INNER JOIN "orderitem" ON "order".order_id = "orderitem".order_id WHERE "order".user_id = "'+customer_id+'"',db.engine)
@@ -197,17 +201,17 @@ def view_pending_order():
     promotion_id = Order.query.filter_by(user_id=customer_id, order_status='Pending').first().promotion_id
     pro = Promotion.query.get(promotion_id)
     total_cost = Order.query.filter_by(user_id=customer_id, order_status='Pending').first().total_cost
-    if pro is not None:
-        if pro.discount_type == "literal":
-            discount_value = pro.discount_value
-        else:
-            discount_value = (total_cost*pro.discount_value)/100
-        if total_cost < pro.min_purchase:
-            discount_value = 0
-    else:
-        discount_value = 0
+    # if pro is not None:
+    #     if pro.discount_type == "literal":
+    #         discount_value = pro.discount_value
+    #     else:
+    #         discount_value = (total_cost*pro.discount_value)/100
+    #     if total_cost < pro.min_purchase:
+    #         discount_value = 0
+    # else:
+    #     discount_value = 0
     
-    cp = order_payload_format(detail,discount_value)
+    cp = order_payload_format(detail)
     out = custompayload(cp)
     return jsonify(out)
         
@@ -233,7 +237,7 @@ def check_slip():
                 for item in order_paid.to_dict(orient='records'):
                     if item['qrcode_data'] == data['data']['qrcodeData']:
                         return error_payload_format("Slip นี้เคยถูกใช้แล้ว"), 200
-                if order['total_cost'][0] == data['data']['paidLocalAmount']:
+                if order['total_cost'][0]-order['discount'][0] == data['data']['paidLocalAmount']:
                     values = {
                         'order_status' : 'Paid',
                         'qrcode_data' : data['data']['qrcodeData']
@@ -264,7 +268,7 @@ def check_slip():
     
 def sending_key(app,email,games):
     with app.app_context():
-        msg_title = "[OTP-Yean]"
+        msg_title = "[LARO-BOT]"
         sender = "noreply@gmail.com"
         msg = Message(msg_title, sender=sender,recipients=[email])
         msg.body = ''
