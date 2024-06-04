@@ -1,7 +1,6 @@
 import json
 from kafka import KafkaProducer
 
-# Initialize Kafka producer
 producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
 def noti_produce(user_id):

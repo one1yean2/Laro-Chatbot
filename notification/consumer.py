@@ -14,7 +14,7 @@ LINE_ACCESS_TOKEN = "2FiR3KE3mT5uHuaSkv7GDqB+Vxgq4QEYK7vG6aLpfyY91cCwDTGiKl7vKBJ
 LINE_API_URL = "https://api.line.me/v2/bot/message/push"
 
 
-# def send_message(user_id):
+
 def send_message(user_id):
     headers = {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ def process_message(message):
         user_id = data['USER_ID']
         print("User ID:", user_id)
         schedule.clear(user_id)
-        # Schedule message sending function to run every 15 seconds
+
         
         schedule.every(15).minutes.do(send_message, user_id).tag(user_id)
 
@@ -54,17 +54,16 @@ def process_message(message):
 def run_scheduler():
     while True:
         schedule.run_pending()
-        time.sleep(1)  # Sleep to avoid high CPU usage
+        time.sleep(1)  
 
-# Initialize Kafka consumer
-consumer = KafkaConsumer('notification', bootstrap_servers='localhost:9092')
 
 # Start the scheduler in a separate thread
 scheduler_thread = threading.Thread(target=run_scheduler)
 scheduler_thread.daemon = True
 scheduler_thread.start()
 
+# Initialize Kafka consumer
+consumer = KafkaConsumer('notification', bootstrap_servers='localhost:9092')
 # Consume messages from Kafka
 for message in consumer:
-    # Process message in a separate function
     process_message(message)

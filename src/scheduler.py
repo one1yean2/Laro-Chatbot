@@ -25,8 +25,6 @@ def scheduled_promotion():
             )
             db.session.add(promo)
             db.session.commit()
-        
-        
 def expired_promotion():
     with scheduler.app.app_context():
         from src.models import Promotion , db

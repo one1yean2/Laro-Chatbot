@@ -225,14 +225,14 @@ def check_slip():
     customer_id = json_data['customer_id']
     slipok = requests.post('https://api.slipok.com/api/line/apikey/22245',headers={'x-authorization':'SLIPOKEM77IPC'},json={'url':image})
     noti_produce(customer_id)
-    data = slipok.json()
+    order = pd.read_sql_query('SELECT * FROM "order" INNER JOIN "orderitem" ON "order".order_id = "orderitem".order_id WHERE "order".user_id = "'+customer_id+'" AND "order".order_status = "Pending"',db.engine)
+    order_paid = pd.read_sql_query('SELECT * FROM "order" INNER JOIN "orderitem" ON "order".order_id = "orderitem".order_id WHERE "order".user_id = "'+customer_id+'" AND "order".order_status = "Paid"',db.engine)
 
+    data = slipok.json()
     if data['success'] == True:
         reciever = data['data']['receiver']
-        if reciever['displayName'] == 'นาย วันหนึ่ง อ' and reciever['name'] == 'WONNEUNG Y' and reciever['proxy']['value'] == "xxx-xxx-1247":
             
-            order = pd.read_sql_query('SELECT * FROM "order" INNER JOIN "orderitem" ON "order".order_id = "orderitem".order_id WHERE "order".user_id = "'+customer_id+'" AND "order".order_status = "Pending"',db.engine)
-            order_paid = pd.read_sql_query('SELECT * FROM "order" INNER JOIN "orderitem" ON "order".order_id = "orderitem".order_id WHERE "order".user_id = "'+customer_id+'" AND "order".order_status = "Paid"',db.engine)
+        if reciever['displayName'] == 'นาย วันหนึ่ง อ' and reciever['name'] == 'WONNEUNG Y' and reciever['proxy']['value'] == "xxx-xxx-1247":
             if not order.empty:
                 for item in order_paid.to_dict(orient='records'):
                     if item['qrcode_data'] == data['data']['qrcodeData']:
